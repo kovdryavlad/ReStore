@@ -55,6 +55,9 @@ axios.interceptors.response.use(async response => {
         case 401:
             toast.error(data.title);
             break;
+        case 404:
+            toast.error(data.title);
+        break;
         case 500:
             router.navigate('/server-error', {state: {error: data}});
         break;
@@ -93,13 +96,21 @@ const Account = {
     login: (values: any) => requests.post('account/login', values),
     register: (values: any) => requests.post('account/register', values),
     currentUser: () => requests.get('account/currentUser'),
+    fetchSavedAddress: () => requests.get('account/savedAddress')
 }
+
+const Orders = {
+    list: () => requests.get('order'),
+    fetch: (id: number) => requests.get(`order/${id}`),
+    create: (values: any) => requests.post('order', values),
+};
 
 const agent = {
     Catalog,
     TestErrors,
     Basket,
-    Account
+    Account,
+    Orders
 }
 
 export default agent;

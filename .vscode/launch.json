@@ -30,7 +30,7 @@
             "request": "attach"
         },
         {
-            "type": "msedge",
+            "type": "chrome",
             "request": "launch",
             "name": "Launch Edge against localhost",
             "url": "http://localhost:3000",

@@ -17,7 +17,9 @@ export const fetchBasketAsync = createAsyncThunk<Basket>(
     'basket/fetchBasketAsync',
     async (_, thunkAPI) => {
         try{
-            return await agent.Basket.get();
+            const basket = await agent.Basket.get();
+            console.log(basket);
+            return basket;
         } catch (error: any){
             return thunkAPI.rejectWithValue({error: error.data});
         }
@@ -98,6 +100,8 @@ export const basketSlice = createSlice({
         builder.addMatcher(isAnyOf(addBasketItemAsync.fulfilled, fetchBasketAsync.fulfilled), (state, action) => {
             state.basket = action.payload;
             state.status = 'idle'
+
+            console.log(state);
         });
 
         builder.addMatcher(isAnyOf(addBasketItemAsync.rejected, fetchBasketAsync.rejected), (state, action) => {

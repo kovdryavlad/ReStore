@@ -43,7 +43,7 @@ export const fetchCurrentUser = createAsyncThunk<User>(
             const {basket, ...user} = userDto;
             if(basket)
             {
-                thunkAPI.dispatch(setBasket({basket}));
+                thunkAPI.dispatch(setBasket(basket));
             }
             localStorage.setItem('user', JSON.stringify(user));
             return user;

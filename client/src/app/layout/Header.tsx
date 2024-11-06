@@ -34,8 +34,8 @@ interface Props{
 
 export default function Header({darkMode, handleThemeChange}: Props)
 {
-    const {basket} = useAppSelector(state => state.basket);
-    const {user} = useAppSelector(state => state.account);
+    const { basket } = useAppSelector(state => state.basket);
+    const { user } = useAppSelector(state => state.account);
     const itemCount = basket?.items?.reduce((sum, item) => sum + item.quantity, 0);
 
     return (
