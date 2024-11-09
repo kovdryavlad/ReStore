@@ -3,6 +3,7 @@ using API.Controllers.Services;
 using API.Data;
 using API.Entities;
 using API.Middleware;
+using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -71,6 +72,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<BasketService>();
 builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped<PaymentService>();
 
 var app = builder.Build();
 

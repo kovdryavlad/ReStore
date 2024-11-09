@@ -1,10 +1,17 @@
-import { Typography, TextField, FormControlLabel, Checkbox, Grid2 } from "@mui/material";
+import { Typography, TextField, Grid2 } from "@mui/material";
 import { useFormContext } from "react-hook-form";
 import AppTextInput from "../../app/components/AppTextInput";
+import { CardCvcElement, CardExpiryElement, CardNumberElement } from "@stripe/react-stripe-js";
+import { StripeInput } from "./StripeInput";
+import { StripeElementType } from "@stripe/stripe-js";
 
-export default function PaymentForm() {
+interface Props{
+  cardState: {elementError: {[key in StripeElementType]?: string}},
+  onCardInputChange: (event: any) => void,
+}
+
+export default function PaymentForm({cardState, onCardInputChange}:Props) {
   const {control} = useFormContext();
-
 
   return (
     <>
@@ -17,39 +24,56 @@ export default function PaymentForm() {
         </Grid2>
         <Grid2 size={{xs: 12, md: 6}}>
           <TextField
-            //required
+            onChange={onCardInputChange}
+            error={!!cardState.elementError.cardNumber}
+            helperText={cardState.elementError.cardNumber}
             id="cardNumber"
-            label="Card number"
+            //label="Card number"
             fullWidth
             autoComplete="cc-number"
-            variant="standard"
+            variant="outlined"
+            InputProps={{
+              inputComponent: StripeInput,
+              inputProps:{
+                component: CardNumberElement
+              }
+            }}
           />
         </Grid2>
         <Grid2 size={{xs: 12, md: 6}}>
           <TextField
-            //required
+            onChange={onCardInputChange}
+            error={!!cardState.elementError.cardExpiry}
+            helperText={cardState.elementError.cardExpiry}
             id="expDate"
-            label="Expiry date"
+            //label="Expiry date"
             fullWidth
             autoComplete="cc-exp"
-            variant="standard"
+            variant="outlined"
+            InputProps={{
+              inputComponent: StripeInput,
+              inputProps:{
+                component: CardExpiryElement
+              }
+            }}
           />
         </Grid2>
         <Grid2 size={{xs: 12, md: 6}}>
           <TextField
-            //required
+            onChange={onCardInputChange}
+            error={!!cardState.elementError.cardCvc}
+            helperText={cardState.elementError.cardCvc}
             id="cvv"
-            label="CVV"
-            helperText="Last three digits on signature strip"
+            //label="CVV"
             fullWidth
             autoComplete="cc-csc"
-            variant="standard"
-          />
-        </Grid2>
-        <Grid2 size={{xs: 12, md: 6}}>
-          <FormControlLabel
-            control={<Checkbox color="secondary" name="saveCard" value="yes" />}
-            label="Remember credit card details for next time"
+            variant="outlined"
+            InputProps={{
+              inputComponent: StripeInput,
+              inputProps:{
+                component: CardCvcElement
+              }
+            }}
           />
         </Grid2>
       </Grid2>
