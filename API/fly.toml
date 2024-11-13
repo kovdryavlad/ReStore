@@ -1,0 +1,26 @@
+# fly.toml app configuration file generated for restore-twilight-sun-9432 on 2024-11-11T18:08:55+02:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'restore-twilight-sun-9432'
+primary_region = 'waw'
+
+
+[env]
+  ASPNETVORE_URLS="http://+:8080"
+  StripeSettings__PublicKey="pk_test_51QIVagEbwXCSGYujH58OLmhdoze6z8yh557CVxQMfaZqZbpdPeed54ulAuWvkf4fr2I9ojBHVoukGAJBXgJ1J14f00iFBsDPSa"
+
+[build]
+  image = 'kovdryavladlearn/restore:latest'
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  size = 'shared-cpu-1x'
