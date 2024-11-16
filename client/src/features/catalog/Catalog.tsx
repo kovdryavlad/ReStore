@@ -70,21 +70,21 @@ export default function Catalog() {
             </Drawer>
 
             <Grid2 container columnSpacing={4}>
-                <Grid2 sx={{ display: { xs: 'block', sm: 'none' } }}>
+                <Grid2 sx={{ display: { xs: 'block', sm: 'block', md: 'none' } }}>
                     <Button onClick={() => setIsDrawerOpen(true)}>Open Filters</Button>
                 </Grid2>
-                <Grid2 size={{ xs: 3 }}
+                <Grid2 size={{ sm: 3 }}
                     sx={{
-                        display: { xs: 'none', sm: 'block' }
+                        display: { xs: 'none', sm: 'none', md: 'block' }
                     }}
                 >
                     {catalogFilters}
                 </Grid2>
-                <Grid2 size={{ xs: 12, sm: 9 }} sx={{ mb: 4 }}>
+                <Grid2 size={{ sm: 12, md: 9 }} sx={{ mb: 4 }}>
                     <ProductList products={products} ></ProductList>
                 </Grid2>
-                <Grid2 size={{ xs: 3 }} />
-                <Grid2 size={{ xs: 9 }}>
+                <Grid2 size={{ sm: 3 }} />
+                <Grid2 size={{ sm: 9 }}>
                     {metaData && <AppPagination
                         metaData={metaData}
                         onPageChange={pageNumber => dispatch(setPageNumber({ pageNumber }))}
