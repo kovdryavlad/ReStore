@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,7 +11,7 @@ public class ExceptionMiddleware
     private readonly IHostEnvironment _env;
 
     public ExceptionMiddleware(
-        RequestDelegate next, 
+        RequestDelegate next,
         ILogger<ExceptionMiddleware> logger,
         IHostEnvironment env)
     {
@@ -19,12 +20,13 @@ public class ExceptionMiddleware
         _env = env;
     }
 
-    public async Task InvokeAsync(HttpContext context){
+    public async Task InvokeAsync(HttpContext context)
+    {
         try
         {
             await _next(context);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);
             context.Response.ContentType = "application/json";
@@ -33,7 +35,8 @@ public class ExceptionMiddleware
             var response = new ProblemDetails()
             {
                 Status = 500,
-                Detail = _env.IsDevelopment() ? ex.StackTrace?.ToString() : null,
+                //Detail = _env.IsDevelopment() ? ex.StackTrace?.ToString() : null,
+                Detail = GetProblemDetail(ex),
                 Title = ex.Message
             };
 
@@ -45,6 +48,42 @@ public class ExceptionMiddleware
             var json = JsonSerializer.Serialize(response, options);
 
             await context.Response.WriteAsync(json);
+        }
+    }
+
+    private string GetProblemDetail(Exception ex)
+    {
+        var sb = new StringBuilder();
+        sb.Append($"Error occurred;");
+        sb.AppendLine();
+
+        WriteException(sb, ex);
+
+        return sb.ToString();
+    }
+
+    private static void WriteException(StringBuilder sb, Exception exception, string path = "")
+    {
+        sb.Append(path).AppendLine($"Exception type: {exception.GetType().Name}")
+            .Append(path).AppendLine($"Message: {exception.Message}")
+            .Append(path).AppendLine($"Stack trace: {exception.StackTrace}");
+
+        if (exception is AggregateException ae)
+        {
+            sb.AppendLine()
+                .Append(path).AppendLine("With inner exceptions:");
+            foreach (var innerException in ae.InnerExceptions)
+            {
+                WriteException(sb, innerException, $"{path}{exception.GetType().Name}>");
+            }
+        }
+
+        if (exception.InnerException != null)
+        {
+            sb.AppendLine()
+                .Append(path).AppendLine("With inner exception:");
+
+            WriteException(sb, exception.InnerException, $"{path}{exception.GetType().Name}>");
         }
     }
 }
