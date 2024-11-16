@@ -1,85 +1,96 @@
-import { Grid2, Paper } from "@mui/material";
+import { Box, Button, Drawer, Grid2, Paper } from "@mui/material";
 import ProductList from "./ProductList";
-import { useEffect } from "react";
 import LoadingComponent from "../../app/layout/LoadingComponent";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
-import { fetchFiltersAsync, fetchProductsAsync, productSelectors, setPageNumber, setProductParams } from "./catalogSlice";
+import { setPageNumber, setProductParams } from "./catalogSlice";
 import ProductSearch from "./ProductSearch";
 import RadioButtonGroup from "../../app/components/RadioButtonGroup";
 import CheckboxButtons from "../../app/components/CheckboxButtons";
 import AppPagination from "../../app/components/AppPagination";
+import useProducts from "../../app/hooks/useProducts";
+import { useState } from "react";
 
 const sortOptions = [
-    {value: 'name', label: 'Alphabetical'},
-    {value: 'priceDesc', label: 'Price - High to low'},
-    {value: 'price', label: 'Price - Low to high'},
+    { value: 'name', label: 'Alphabetical' },
+    { value: 'priceDesc', label: 'Price - High to low' },
+    { value: 'price', label: 'Price - Low to high' },
 ]
 
-export default function Catalog(){
-
-    const products = useAppSelector(productSelectors.selectAll);
-    const { productsLoaded, filtersLoaded, brands, types, productParams, metaData } = useAppSelector(state => state.catalog);
+export default function Catalog() {
+    const { products, brands, types, filtersLoaded, metaData } = useProducts();
+    const { productParams } = useAppSelector(state => state.catalog);
     const dispatch = useAppDispatch();
-    
-    useEffect(() => {
-        if(!productsLoaded){
-            dispatch(fetchProductsAsync());
-        }
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-    }, [productsLoaded, dispatch])
+    const toggleDrawer = (isDrawerOpen: boolean) => () => {
+      setIsDrawerOpen(isDrawerOpen);
+    };
 
-    useEffect(() => {
-        if(!filtersLoaded){
-            dispatch(fetchFiltersAsync());
-        }
-    }, [dispatch, filtersLoaded])
+    const catalogFilters = (
+        <>
+            <Paper sx={{ mb: 2 }}>
+                <ProductSearch />
+            </Paper>
+            <Paper sx={{ mb: 2, p: 2 }}>
+                <RadioButtonGroup
+                    options={sortOptions}
+                    onChange={(event: any) =>
+                        dispatch(setProductParams({ orderBy: event.target.value }))}
+                    selectedValue={productParams.orderBy}
+                />
+            </Paper>
 
+            <Paper sx={{ p: 2, mb: 2 }}>
+                <CheckboxButtons
+                    items={brands}
+                    checked={productParams.brands}
+                    onChange={brands =>
+                        dispatch(setProductParams({ brands }))}
+                />
+            </Paper>
 
-    if(!filtersLoaded) return <LoadingComponent message="Loading products..."/>
+            <Paper sx={{ p: 2 }}>
+                <CheckboxButtons
+                    items={types}
+                    checked={productParams.types}
+                    onChange={types =>
+                        dispatch(setProductParams({ types }))}
+                />
+            </Paper>
+        </>
+    );
 
-    return(
-        <Grid2 container columnSpacing={4}>
-            <Grid2 size={{xs: 3}}>
-                <Paper sx={{mb: 2}}>
-                    <ProductSearch />
-                </Paper>
-                <Paper sx={{mb: 2, p: 2}}>
-                    <RadioButtonGroup 
-                        options={sortOptions} 
-                        onChange={ (event: any) => 
-                            dispatch(setProductParams({ orderBy: event.target.value })) }
-                        selectedValue={productParams.orderBy}
-                    />
-                </Paper>
+    if (!filtersLoaded) return <LoadingComponent message="Loading products..." />
 
-                <Paper sx={{p: 2, mb: 2}}>
-                    <CheckboxButtons 
-                        items={brands} 
-                        checked={productParams.brands} 
-                        onChange={ brands => 
-                            dispatch(setProductParams({brands}))}
-                    />
-                </Paper>
+    return (
+        <>
+            <Drawer open={isDrawerOpen} onClose={toggleDrawer(false)}>
+                <Box paddingTop={2}/>
+                {catalogFilters}
+            </Drawer>
 
-                <Paper sx={{p: 2}}>
-                <CheckboxButtons 
-                        items={types} 
-                        checked={productParams.types} 
-                        onChange={ types => 
-                            dispatch(setProductParams({types}))}
-                    />
-                </Paper>
+            <Grid2 container columnSpacing={4}>
+                <Grid2 sx={{ display: { xs: 'block', sm: 'none' } }}>
+                    <Button onClick={() => setIsDrawerOpen(true)}>Open Filters</Button>
+                </Grid2>
+                <Grid2 size={{ xs: 3 }}
+                    sx={{
+                        display: { xs: 'none', sm: 'block' }
+                    }}
+                >
+                    {catalogFilters}
+                </Grid2>
+                <Grid2 size={{ xs: 12, sm: 9 }} sx={{ mb: 4 }}>
+                    <ProductList products={products} ></ProductList>
+                </Grid2>
+                <Grid2 size={{ xs: 3 }} />
+                <Grid2 size={{ xs: 9 }}>
+                    {metaData && <AppPagination
+                        metaData={metaData}
+                        onPageChange={pageNumber => dispatch(setPageNumber({ pageNumber }))}
+                    />}
+                </Grid2>
             </Grid2>
-            <Grid2 size={{xs: 9}} sx={{mb: 4}}>
-                <ProductList products={products} ></ProductList>
-            </Grid2>
-            <Grid2 size={{xs: 3}}/>
-            <Grid2 size={{xs: 9}}>
-                {metaData && <AppPagination 
-                    metaData={metaData} 
-                    onPageChange={ pageNumber => dispatch(setPageNumber({pageNumber}))}
-                />}
-            </Grid2>
-    </Grid2>
+        </>
     );
 }
