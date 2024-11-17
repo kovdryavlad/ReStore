@@ -10,7 +10,8 @@ primary_region = 'waw'
 [env]
   ASPNETVORE_URLS="http://+:8080"
   StripeSettings__PublicKey="pk_test_51QIVagEbwXCSGYujH58OLmhdoze6z8yh557CVxQMfaZqZbpdPeed54ulAuWvkf4fr2I9ojBHVoukGAJBXgJ1J14f00iFBsDPSa"
-
+  Cloudinary__CloudName="dz1qlbqjs"
+  Cloudinary__ApiKey="961492328147684"
 [build]
   image = 'kovdryavladlearn/restore:latest'
 
